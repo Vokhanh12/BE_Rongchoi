@@ -5,19 +5,20 @@
 
 package database
 
+
+
 import (
 	"context"
 	"database/sql"
 	"time"
-
 	"github.com/google/uuid"
 )
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users(id, first_name, last_name, email, nick_name, number_phone, day_of_birth, address , role, create_at, update_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-RETURNING id, create_at, update_at, first_name, last_name, email, nick_name, number_phone, day_of_birth, address, role
-`
+RETURNING id, create_at, update_at, first_name, last_name, email, nick_name, number_phone, day_of_birth, address, role`
+
 
 type CreateUserParams struct {
 	ID          uuid.UUID
