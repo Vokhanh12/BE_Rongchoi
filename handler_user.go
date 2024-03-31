@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/vokhanh12/RongchoiApp/backend/internal/auth"
 	"github.com/vokhanh12/RongchoiApp/backend/internal/database"
 )
 
@@ -27,19 +28,11 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 	decoder := json.NewDecoder(r.Body)
 
 	params := parameters{}
+
 	err := decoder.Decode(&params)
 	if err != nil {
 		respondWithError(w, 400, fmt.Sprintf("Error parsing JSON: %v", err))
 		return
-	}
-
-	// check NickName
-	var pNickName = sql.NullString{}
-	if params.NickName != "" {
-		pNickName = sql.NullString{String: params.NickName, Valid: true}
-	} else {
-		// declare String is Empty
-		pNickName = sql.NullString{String: "", Valid: false}
 	}
 
 	// check DayOfBirth
@@ -54,6 +47,15 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 	} else {
 		// declare Time is zero
 		pDayOfBirth = sql.NullTime{Time: time.Time{}, Valid: false}
+	}
+
+	// check NickName
+	var pNickName = sql.NullString{}
+	if params.NickName != "" {
+		pNickName = sql.NullString{String: params.NickName, Valid: true}
+	} else {
+		// declare String is Empty
+		pNickName = sql.NullString{String: "", Valid: false}
 	}
 
 	// check Email
@@ -99,5 +101,24 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Create user Success
-	respondWithJSON(w, 200, user)
+	respondWithJSON(w, 201, databaseUserToUser(user))
+}
+
+// handleCreateUser use for [V1Router]
+func (apiCfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request) {
+
+	apiKey, err := auth.GetAPIKey(r.Header)
+	if err != nil {
+		respondWithError(w, 403, fmt.Sprintf("Auth error: %v", err))
+		return
+	}
+
+	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
+	if err != nil {
+		respondWithError(w, 400, fmt.Sprintf("couldn't get user: %v", err))
+		return
+	}
+
+	respondWithJSON(w, 200, databaseUserToUser(user))
+
 }

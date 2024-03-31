@@ -67,4 +67,5 @@ type User struct {
 	DayOfBirth  sql.NullTime
 	Address     sql.NullString
 	Role        UserRole
+	ApiKey      string
 }

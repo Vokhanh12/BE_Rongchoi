@@ -3,10 +3,10 @@ CREATE TYPE user_role AS ENUM ('buyer', 'employee');
 
 CREATE TABLE users(
     id UUID PRIMARY KEY,
-    create_at DATE NOT NULL,
-    update_at DATE NOT NULL,
+    create_at TIMESTAMP NOT NULL,
+    update_at TIMESTAMP NOT NULL,
     first_name VARCHAR(10) NOT NULL,
-    last_name VARCHAR(10) NOT NULL,
+    last_name VARCHAR(15) NOT NULL,
     email VARCHAR(50) NOT NULL,
     nick_name VARCHAR(15),
     number_phone VARCHAR(20) NOT NULL,
