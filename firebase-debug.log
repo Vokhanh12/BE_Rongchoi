@@ -1,0 +1,21 @@
+[debug] [2024-03-31T13:06:52.107Z] ----------------------------------------------------------------------
+[debug] [2024-03-31T13:06:52.109Z] Command:       /usr/local/bin/node /usr/local/bin/firebase init
+[debug] [2024-03-31T13:06:52.109Z] CLI Version:   13.6.0
+[debug] [2024-03-31T13:06:52.109Z] Platform:      linux
+[debug] [2024-03-31T13:06:52.110Z] Node Version:  v21.6.1
+[debug] [2024-03-31T13:06:52.110Z] Time:          Sun Mar 31 2024 20:06:52 GMT+0700 (Indochina Time)
+[debug] [2024-03-31T13:06:52.110Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-03-31T13:06:52.114Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-03-31T13:06:52.114Z] > authorizing via signed-in user (khanhyou2018@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/vokhanh/development/flutter/RongChoi_Project/rongchoi_app/backend
+

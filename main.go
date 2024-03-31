@@ -7,6 +7,12 @@ import (
 	"net/http"
 	"os"
 
+	"context"
+
+	firebase "firebase.google.com/go"
+
+	"google.golang.org/api/option"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
@@ -19,6 +25,23 @@ type apiConfig struct {
 }
 
 func main() {
+
+	opt := option.WithCredentialsFile("rongchoi-e9690-firebase-adminsdk-jw6np-5bef5c0766.json")
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		log.Fatalf("error initializing app: %v", err)
+	}
+
+	auth, err := app.Auth(context.Background())
+	if err != nil {
+		log.Fatalf("error auth app : %v", err)
+	}
+
+	customToken, err := auth.CustomToken(context.Background(), "-LDLrwZnJ0kI4kvyIb2Q")
+	if err != nil {
+		log.Fatalf("error CustomToken app : %v", err)
+	}
+	log.Fatalf("token : %s", customToken)
 
 	godotenv.Load()
 
