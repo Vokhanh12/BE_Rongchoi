@@ -39,7 +39,7 @@ func (apiCfg *apiConfig) middlewareAuthAPIKey(handler authedHandler) http.Handle
 func (apiCfg *apiConfig) middlewareAuthBearer(handler authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		opt := option.WithCredentialsFile("rongchoi-e9690-firebase-adminsdk-jw6np-0b0b0fc9fd.json")
+		opt := option.WithCredentialsFile("json")
 		app, err := firebase.NewApp(context.Background(), nil, opt)
 		if err != nil {
 			log.Fatalf("error initializing app: %v", err)
