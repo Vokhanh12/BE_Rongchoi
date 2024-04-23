@@ -55,17 +55,34 @@ func (ns NullUserRole) Value() (driver.Value, error) {
 	return string(ns.UserRole), nil
 }
 
-type User struct {
-	ID          uuid.UUID
-	CreateAt    time.Time
-	UpdateAt    time.Time
-	FirstName   string
-	LastName    string
-	Email       string
-	NickName    sql.NullString
+type Post struct {
+	ID          int32
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Title       string
+	Content     string
 	NumberPhone string
-	DayOfBirth  sql.NullTime
-	Address     sql.NullString
-	Role        UserRole
-	ApiKey      string
+	Address     string
+	NickName    string
+	UserID      uuid.UUID
+}
+
+type User struct {
+	ID            uuid.UUID
+	CreateAt      time.Time
+	UpdateAt      time.Time
+	FirstName     string
+	LastName      string
+	Email         string
+	NickName      sql.NullString
+	NumberPhone   string
+	DayOfBirth    sql.NullTime
+	Address       sql.NullString
+	Role          UserRole
+	ApiKey        string
+	ApiIat        time.Time
+	ApiExp        time.Time
+	RefreshApiKey string
+	RefApiIat     time.Time
+	RefApiExp     time.Time
 }

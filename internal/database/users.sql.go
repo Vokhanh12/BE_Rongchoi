@@ -14,25 +14,29 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users(id, first_name, last_name, email, nick_name, number_phone, day_of_birth, address , role, create_at, update_at, api_key)
+INSERT INTO users(id, first_name, last_name, email, nick_name, number_phone, day_of_birth, address , role, create_at, update_at, api_key, api_iat, api_exp, refresh_api_key, ref_api_iat, ref_api_exp)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,
-encode(sha256(random()::text::bytea), 'hex')
-)
-RETURNING id, create_at, update_at, first_name, last_name, email, nick_name, number_phone, day_of_birth, address, role, api_key
+encode(sha256(random()::text::bytea), 'hex'), $12, $13, $14, $15, $16)
+RETURNING id, create_at, update_at, first_name, last_name, email, nick_name, number_phone, day_of_birth, address, role, api_key, api_iat, api_exp, refresh_api_key, ref_api_iat, ref_api_exp
 `
 
 type CreateUserParams struct {
-	ID          uuid.UUID
-	FirstName   string
-	LastName    string
-	Email       string
-	NickName    sql.NullString
-	NumberPhone string
-	DayOfBirth  sql.NullTime
-	Address     sql.NullString
-	Role        UserRole
-	CreateAt    time.Time
-	UpdateAt    time.Time
+	ID            uuid.UUID
+	FirstName     string
+	LastName      string
+	Email         string
+	NickName      sql.NullString
+	NumberPhone   string
+	DayOfBirth    sql.NullTime
+	Address       sql.NullString
+	Role          UserRole
+	CreateAt      time.Time
+	UpdateAt      time.Time
+	ApiIat        time.Time
+	ApiExp        time.Time
+	RefreshApiKey string
+	RefApiIat     time.Time
+	RefApiExp     time.Time
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -48,6 +52,11 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Role,
 		arg.CreateAt,
 		arg.UpdateAt,
+		arg.ApiIat,
+		arg.ApiExp,
+		arg.RefreshApiKey,
+		arg.RefApiIat,
+		arg.RefApiExp,
 	)
 	var i User
 	err := row.Scan(
@@ -63,12 +72,17 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Address,
 		&i.Role,
 		&i.ApiKey,
+		&i.ApiIat,
+		&i.ApiExp,
+		&i.RefreshApiKey,
+		&i.RefApiIat,
+		&i.RefApiExp,
 	)
 	return i, err
 }
 
 const getUserByAPIKey = `-- name: GetUserByAPIKey :one
-SELECT id, create_at, update_at, first_name, last_name, email, nick_name, number_phone, day_of_birth, address, role, api_key FROM users WHERE api_key = $1
+SELECT id, create_at, update_at, first_name, last_name, email, nick_name, number_phone, day_of_birth, address, role, api_key, api_iat, api_exp, refresh_api_key, ref_api_iat, ref_api_exp FROM users WHERE api_key = $1
 `
 
 func (q *Queries) GetUserByAPIKey(ctx context.Context, apiKey string) (User, error) {
@@ -87,6 +101,21 @@ func (q *Queries) GetUserByAPIKey(ctx context.Context, apiKey string) (User, err
 		&i.Address,
 		&i.Role,
 		&i.ApiKey,
+		&i.ApiIat,
+		&i.ApiExp,
+		&i.RefreshApiKey,
+		&i.RefApiIat,
+		&i.RefApiExp,
 	)
 	return i, err
+}
+
+const updateAllAPIKeyOfUser = `-- name: UpdateAllAPIKeyOfUser :exec
+UPDATE users
+SET api_key = encode(sha256(random()::text::bytea), 'hex')
+`
+
+func (q *Queries) UpdateAllAPIKeyOfUser(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, updateAllAPIKeyOfUser)
+	return err
 }

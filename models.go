@@ -39,3 +39,31 @@ func databaseUserToUser(dbUser database.User) User {
 		APIKey:      dbUser.ApiKey,
 	}
 }
+
+type Post struct {
+	Title       string    `json:"title"`
+	Content     string    `json:"content"`
+	NumberPhone string    `json:"number_phone"`
+	Address     string    `json:"address"`
+	NickName    string    `json:"nick_name"`
+	UserID      uuid.UUID `json:"user_id"`
+}
+
+func databasePostToPost(dbPost database.Post) Post {
+	return Post{
+		Title:       dbPost.Title,
+		Content:     dbPost.Content,
+		NumberPhone: dbPost.NumberPhone,
+		Address:     dbPost.Address,
+		NickName:    dbPost.NickName,
+		UserID:      dbPost.UserID,
+	}
+}
+
+func databasePostsToPosts(dbPosts []database.Post) []Post {
+	posts := []Post{}
+	for _, dbPost := range dbPosts {
+		posts = append(posts, databasePostToPost(dbPost))
+	}
+	return posts
+}

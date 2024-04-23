@@ -24,6 +24,7 @@ func respondWithError(w http.ResponseWriter, code int, msg string) {
 
 // respondWithJSON used to [handlerReadiness]
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+
 	dat, err := json.Marshal(payload)
 	if err != nil {
 		log.Print("Failed to marshal JSON reponse: %v", payload)

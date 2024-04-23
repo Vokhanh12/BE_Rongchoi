@@ -6,22 +6,60 @@ import (
 	"strings"
 )
 
-// GetAPIKEY extacts an API Key from
+// GetAPIKey extracts an API Key from
 // the headers of an HTTP request
 // Example:
 // Authorization: ApiKey {insert apikey here}
 func GetAPIKey(headers http.Header) (string, error) {
 	val := headers.Get("Authorization")
 	if val == "" {
-		return "", errors.New("No authentication info found")
+		return "", errors.New("Missing authorization header")
 	}
 
-	vals := strings.Split(val, " ")
-	if len(vals) != 2 {
-		return "", errors.New("Malformed auth header")
+	parts := strings.SplitN(val, " ", 2)
+	if len(parts) != 2 {
+		return "", errors.New("Malformed authorization header")
 	}
-	if vals[0] != "ApiKey" {
-		return "", errors.New("Malformed first part of auth header")
+
+	const TYPE = "ApiKey"
+	authType := strings.TrimSpace(parts[0])
+	if authType != TYPE {
+		return "", errors.New("Unsupported authorization type")
 	}
-	return vals[1], nil
+
+	apiKey := strings.TrimSpace(parts[1])
+	if apiKey == "" {
+		return "", errors.New("Empty API key")
+	}
+
+	return apiKey, nil
+}
+
+// GetBearer extracts a Bearer token from
+// the headers of an HTTP request
+// Example:
+// Authorization: Bearer {insert token here}
+func GetBearer(headers http.Header) (string, error) {
+	val := headers.Get("Authorization")
+	if val == "" {
+		return "", errors.New("Missing authorization header")
+	}
+
+	parts := strings.SplitN(val, " ", 2)
+	if len(parts) != 2 {
+		return "", errors.New("Malformed authorization header")
+	}
+
+	const TYPE = "Bearer"
+	authType := strings.TrimSpace(parts[0])
+	if authType != TYPE {
+		return "", errors.New("Unsupported authorization type")
+	}
+
+	token := strings.TrimSpace(parts[1])
+	if token == "" {
+		return "", errors.New("Empty token")
+	}
+
+	return token, nil
 }

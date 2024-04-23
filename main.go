@@ -7,12 +7,6 @@ import (
 	"net/http"
 	"os"
 
-	"context"
-
-	firebase "firebase.google.com/go"
-
-	"google.golang.org/api/option"
-
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
@@ -25,23 +19,6 @@ type apiConfig struct {
 }
 
 func main() {
-
-	opt := option.WithCredentialsFile("rongchoi-e9690-firebase-adminsdk-jw6np-5bef5c0766.json")
-	app, err := firebase.NewApp(context.Background(), nil, opt)
-	if err != nil {
-		log.Fatalf("error initializing app: %v", err)
-	}
-
-	auth, err := app.Auth(context.Background())
-	if err != nil {
-		log.Fatalf("error auth app : %v", err)
-	}
-
-	customToken, err := auth.CustomToken(context.Background(), "-LDLrwZnJ0kI4kvyIb2Q")
-	if err != nil {
-		log.Fatalf("error CustomToken app : %v", err)
-	}
-	log.Fatalf("token : %s", customToken)
 
 	godotenv.Load()
 
@@ -78,15 +55,24 @@ func main() {
 	v1Router := chi.NewRouter()
 	v1Router.HandleFunc("/ready", handlerReadiness)
 	v1Router.HandleFunc("/err", handlerErr)
-	v1Router.Post("/users", apiCfg.handlerCreateUser)
-	v1Router.Get("/users", apiCfg.handlerGetUser)
 
+	v1Router.Get("/login", apiCfg.middlewareAuthBearer(apiCfg.handlerLogin))
+
+	v1Router.Post("/users", apiCfg.handlerCreateUser)
+	v1Router.Get("/users", apiCfg.middlewareAuthAPIKey(apiCfg.handlerGetUser))
+
+	v1Router.Post("/posts", apiCfg.middlewareAuthAPIKey(apiCfg.handlerCreatePost))
+	v1Router.Get("/posts", apiCfg.handlerGetPosts)
 	router.Mount("/v1", v1Router)
 
 	srv := &http.Server{
 		Handler: router,
 		Addr:    ":" + portString,
 	}
+
+	go func() {
+		handlerUpdateAPIUsers(conn)
+	}()
 
 	log.Printf("Server starting on port %v", portString)
 	err = srv.ListenAndServe()
@@ -95,5 +81,7 @@ func main() {
 	}
 
 	fmt.Println("Port:", portString)
+
+	select {}
 
 }
