@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
@@ -51,6 +52,17 @@ func main() {
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
+
+	// Thêm middleware ghi nhận IP
+	router.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Lấy địa chỉ IP của client
+			ip := r.RemoteAddr
+			// Ghi lại địa chỉ IP và thời gian vào log
+			log.Printf("Request from IP: %s at time: %v\n", ip, time.Now())
+			next.ServeHTTP(w, r)
+		})
+	})
 
 	v1Router := chi.NewRouter()
 	v1Router.HandleFunc("/ready", handlerReadiness)

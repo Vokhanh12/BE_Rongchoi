@@ -39,7 +39,7 @@ func (apiCfg *apiConfig) middlewareAuthAPIKey(handler authedHandler) http.Handle
 func (apiCfg *apiConfig) middlewareAuthBearer(handler authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		opt := option.WithCredentialsFile("json")
+		opt := option.WithCredentialsFile("rongchoi-e9690-firebase-adminsdk-jw6np-ebfd71f181.json")
 		app, err := firebase.NewApp(context.Background(), nil, opt)
 		if err != nil {
 			log.Fatalf("error initializing app: %v", err)
@@ -77,7 +77,6 @@ func (apiCfg *apiConfig) middlewareAuthBearer(handler authedHandler) http.Handle
 				if err != nil {
 					fmt.Println("Failed to parse expired time:", err)
 					respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid token"))
-					return
 				}
 
 				// Giả sử exp là thời điểm hết hạn của token
@@ -88,7 +87,14 @@ func (apiCfg *apiConfig) middlewareAuthBearer(handler authedHandler) http.Handle
 
 				// Xử lý các trường hợp lỗi khác
 				log.Printf("The expiration time of the token: %v, [%s]", err, expirationTime)
-				respondWithError(w, http.StatusBadRequest, fmt.Sprintf("The expiration time of the token"))
+
+				// Create your error message
+				errorMessage := fmt.Sprintf("The expiration time of the token")
+
+				// Create a map to hold your error message
+				response := map[string]string{"Error": errorMessage}
+
+				respondWithJSON(w, http.StatusOK, response)
 				return
 			}
 
